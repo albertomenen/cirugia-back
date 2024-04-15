@@ -1,5 +1,4 @@
 import os
-import environ
 
 
 from datetime import timedelta
@@ -8,15 +7,17 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-env = environ.Env()
-# Leyendo el archivo .env
-environ.Env.read_env()
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
+
 SECRET_KEY = os.environ.get("SECRET_KEY")
+
+print(os.environ.get("SECRET_KEY"))
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = bool(os.environ.get("DEBUG", default=0))
@@ -36,7 +37,7 @@ SIMPLE_JWT = {
     "BLACKLIST_AFTER_ROTATION": False,
     "UPDATE_LAST_LOGIN": True,
     "SIGNING_KEY": "acomplexkey",
-    "ALOGRIGTHM": "HS512",
+    "ALGORITHM": "HS512",
 }
 
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None

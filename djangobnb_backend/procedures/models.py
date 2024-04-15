@@ -9,13 +9,11 @@ class Procedures(models.Model):
         id= models.UUIDField(primary_key=True, default=uuid.uuid4, editable= False)
         title = models.CharField(max_length=255)
         description = models.TextField()
-        branddescription = models.TextField()
         price_per_procedure = models.IntegerField()
-        days_procedure= models.IntegerField()
-        size_cc= models.IntegerField()
         hospitals=models.TextField(max_length=50)
         information_procedure=models.TextField()
-        payment= models.TextField()
+        guests = models.IntegerField()
+        payment= models.TextField(null=True)
         country = models.CharField(max_length=255)
         country_code= models.CharField(max_length=10)
         category = models.CharField(max_length=255)
@@ -28,3 +26,17 @@ class Procedures(models.Model):
         
         def image_url(self):
                 return f'{settings.WEBSITE_URL}{self.image.url}'
+        
+
+class Reservation (models.Model):
+        id= models.UUIDField(primary_key=True, default=uuid.uuid4, editable= False)
+        procedure= models.ForeignKey(Procedures, related_name='reservations', on_delete=models.CASCADE)
+        start_date= models.DateField()
+        end_date= models.DateField()
+        total_price = models.FloatField()
+        # Vamos a cambiar el de guest por type of process
+        guests = models.IntegerField()
+        created_by = models.ForeignKey(User, related_name='reservations', on_delete=models.CASCADE)
+        created_at= models.DateField(auto_now_add= True)
+
+

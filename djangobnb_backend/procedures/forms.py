@@ -1,4 +1,5 @@
 from django.forms import ModelForm
+from rest_framework import serializers
 
 from .models import Procedures
 
@@ -7,11 +8,12 @@ class ProcedureForm(ModelForm):
         model = Procedures
         fields = (
             'title',
-            'branddescription',
             'description',
             'price_per_procedure',
             'payment',
             'country',
-            'country_code',
+            'guests',
             'image',
         )
+
+
