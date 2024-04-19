@@ -30,15 +30,15 @@ class ProcedureDetailSerializer(serializers.ModelSerializer):
             'payment',
             'country',
             'country_code',
-            'image',
+            'image_url',
             'hospitals',
             'information_procedure',
             'doctor',
         )
 class ReservationsListSerializer(serializers.ModelSerializer):
-    procedures = ProceduresListSerializer(read_only=True, many=False)
+    procedure = ProceduresListSerializer(read_only=True, many=False)
     class Meta:
         model = Reservation
         fields = (
-            'id', 'start_date', 'total_price', 'procedures', 
+            'id', 'start_date','end_date', 'procedure'
         )

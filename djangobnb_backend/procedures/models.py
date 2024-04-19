@@ -18,7 +18,7 @@ class Procedures(models.Model):
         country_code= models.CharField(max_length=10)
         category = models.CharField(max_length=255)
 
-        #favorited
+        favorited = models.ManyToManyField(User, related_name='favorites', blank=True)
 
         image=models.ImageField(upload_to='uploads/procedures')
         doctor = models.ForeignKey(User, related_name='procedures', on_delete=models.CASCADE)

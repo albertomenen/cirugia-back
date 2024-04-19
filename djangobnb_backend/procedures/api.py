@@ -2,17 +2,34 @@ from sre_constants import SUCCESS
 from django.http import JsonResponse
 
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
-
+from rest_framework_simplejwt.tokens import AccessToken
 
 from .forms import ProcedureForm
 from .models import Procedures, Reservation
 from .serializers import ProceduresListSerializer
 from .serializers import ProcedureDetailSerializer, ProcedureDetailSerializer, ReservationsListSerializer
+from useraccount.models import User
 
 @api_view(['GET'])
 @authentication_classes([])
 @permission_classes([])
 def procedures_list(request):
+    # Auth
+
+    try:
+        token= request.META['HTTP_AUTHORIZATION'].split('Bearer')[1]
+        token=AccessToken(token)
+        user_id= token.payload['user_id']
+        user= User.objects.get(pk=user_id)
+
+    except Exception as e:
+        user= None
+
+    print('user', user)
+    ##
+
+
+    favorities = []
     procedures = Procedures.objects.all()
     
 
@@ -22,6 +39,13 @@ def procedures_list(request):
 
     if doctor_id:
         procedures = procedures.filter(doctor_id=doctor_id)
+
+    ## Favorites
+
+    if user:
+        for procedure in procedures:
+            if user in procedure.favorited.all():
+                favorites.append(procedure.id)
 
     
 
@@ -45,8 +69,8 @@ def procedure_detail(request, pk):
 @authentication_classes([])
 @permission_classes([])
 def procedure_reservation(request, pk):
-    procedures= Procedures.objects.get(pk=pk)
-    reservations = procedures.reservations.all()
+    procedure= Procedures.objects.get(pk=pk)
+    reservations = procedure.reservations.all()
 
     serializer = ReservationsListSerializer(reservations, many=True)
 
@@ -79,7 +103,7 @@ def book_procedure(request, pk):
         procedures=Procedures.objects.get(pk=pk)
 
         Reservation.objects.create(
-            procedures=procedures,
+            procedure=procedures,
             start_date=start_date,
             end_date=end_date,
             total_price=total_price,
@@ -93,4 +117,20 @@ def book_procedure(request, pk):
         print('Error', e)
 
         return JsonResponse({'success': False})
+    
+@api_view(['POST'])
+def toggle_favorite(request,pk):
+     
+     procedures=Procedures.objects.get(pk=pk)
+
+     if request.user in procedures.favorited.all():
+         procedures.favorited.remove(request.user)
+
+         return JsonResponse ({'is_favorited': False})
+     else:
+         procedures.favorited.add(request.user)
+
+         return JsonResponse ({'is_favorited': True})
+         
+
     
