@@ -29,16 +29,19 @@ def procedures_list(request):
     ##
 
 
-    favorities = []
+    favorites = []
     procedures = Procedures.objects.all()
     
 
     # Filter
-
+    is_favorites= request.GET.get('is_favorites', '')
     doctor_id = request.GET.get('doctor_id')
 
     if doctor_id:
         procedures = procedures.filter(doctor_id=doctor_id)
+
+    if is_favorites:
+        procedures = procedures.filter(favorited__in=[user])
 
     ## Favorites
 
@@ -52,7 +55,8 @@ def procedures_list(request):
     serializer = ProceduresListSerializer(procedures, many=True)
 
     return JsonResponse({
-        'data': serializer.data
+        'data': serializer.data,
+        'favorites': favorites
     })
 
 @api_view(['GET'])
